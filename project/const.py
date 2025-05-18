@@ -1,9 +1,10 @@
 """
-Store all project constants here. NLTK would be perfect for entity extraction for Stage and Race Enums
-but it is overkill and simple regex based string manipulation is used instead.
+Store all project constants here. NLTK would be perfect for entity extraction for Stage and 
+Race Enums but it is overkill and simple regex based string manipulation is used instead. 
+Secrets stored at .env file
 """
-from enum import Enum
 import re
+from enum import Enum
 from typing import Optional
 
 class Stage(Enum):
