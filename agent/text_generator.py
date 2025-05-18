@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 import google.generativeai as genai
 from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 
-from agent.utils import sentiment_analysis
+from agent.utils import get_post_prompt, sentiment_analysis
 from project.const import Stage, TEMPLATES, Result
 from project.setings import get_key
 
@@ -270,31 +270,16 @@ class TransformerTextGenerator(TextGenerator):
     def _create_prompt_for_post(self, context: dict) -> str:
         # TODO: Prompts could be shorter and concise since the model is not that powerful
         # And resource-starved
-        prompt = f"You are {context.get('racer_name', 'Go Mifune')} an F1 racer from the imaginary"
-        f"team {context.get('team_name', 'Mach 5')}. "
-        prompt += "You are very passionate about racing and social media; and engage a "
-        "lot with fans and strangers alike. "
+        prompt = f"You are {context.get('racer_name', 'Go Mifune')} an F1 racer from the imaginary team {context.get('team_name', 'Mach 5')}. "
+        prompt += "You are very passionate about racing and social media; and engage a lot with fans and strangers alike. "
         prompt += f"The current race is {context.get('race_name', 'the Grand Prix')} 2025. "
+
         current_stage: Stage = context.get('stage')
         prompt += f"The current stage is {current_stage.value if current_stage else 'practice'}. "
         current_result: Result | None = context.get('result')
         if current_result:
             prompt += f"Your last race result was {str(current_result)}. "
-        
-        if current_stage == Stage.RACE and current_result == Result.P1:
-            prompt += f"You just won the race (P1)! Write an ecstatic and thankful social media "
-            f"post. Mention your team, {context.get('team_name', 'the team')}, and the thrill of"
-            "victory. Include F1-style hashtags."
-        elif current_stage == Stage.RACE and current_result == Result.DNF:
-            prompt += f"You had a DNF (Did Not Finish) with your result being {str(current_result)}"
-            ". Write a disappointed but resilient social media post. Express determination"
-            "to bounce back. Include hashtags like #NeverGiveUp."
-        elif current_stage in [Stage.FP1, Stage.FP2, Stage.FP3]:
-            prompt += "Write a focused social media post about the current practice "
-            "session. Include hashtags."
-        else:
-            prompt += "Write a general social media post about F1. Include hashtags."
-        return prompt
+        return get_post_prompt(prompt, context, context.get('stage'), context.get('result'))
 
     def generate_post(self, context: dict) -> str:
         prompt = self._create_prompt_for_post(context)
@@ -303,7 +288,7 @@ class TransformerTextGenerator(TextGenerator):
         # Better performance with the model
         generated_sequences = self.generator(
             prompt,
-            max_new_tokens=100,
+            max_new_tokens=200,
             num_return_sequences=1,
             pad_token_id=self.generator.tokenizer.eos_token_id,
             do_sample=True,
@@ -322,11 +307,8 @@ class TransformerTextGenerator(TextGenerator):
 
 
     def _create_prompt_for_reply(self, context: dict, original_comment: str) -> str:
-        prompt = f"You are {context.get('racer_name', 'an F1 racer')}. You are very passionate about "
-        f"social media, and engage a lot with fans and strangers alike. A fan named @trixie commented"
-        f": '{original_comment}'. "
-        prompt += "Write a short, appreciative, and cool reply to this fan. Keep it brief. You can "
-        "check sentiment and re-iterate some of their thoughts."
+        prompt = f"You are {context.get('racer_name', 'Go')}, an F1 racer. You are very passionate about social media, and engage a lot with fans and strangers alike. A fan named @trixie commented: '{original_comment}'. "
+        prompt += "Write a short, appreciative, and cool reply to this fan even if they are being negative to you. Keep it brief. You can check sentiment and re-iterate some of their thoughts."
         return prompt
 
     def generate_reply(self, context: dict, original_comment: str) -> str:
@@ -334,7 +316,7 @@ class TransformerTextGenerator(TextGenerator):
         LOGGER.info(f"Prompt: {prompt}")
         generated_sequences = self.generator(
             prompt,
-            max_new_tokens=70,
+            max_new_tokens=150,
             num_return_sequences=1,
             pad_token_id=self.generator.tokenizer.eos_token_id,
             do_sample=True,
@@ -350,20 +332,18 @@ class TransformerTextGenerator(TextGenerator):
         return reply_text
     
     def generate_mention_post(self, context: dict, entity_to_mention: str, base_message: str) -> str:
-        instruction = f"Create a social media post that incorporates this idea: '{base_message}'. "
-        f"Make sure to prominently feature and praise '{entity_to_mention}' using an"
+        instruction = f"Create a social media post that incorporates this idea: '{base_message}'. Make sure to prominently feature and praise '{entity_to_mention}' using an"
         f"@{entity_to_mention} like on Twitter. Use relevant F1-style hashtags. You can give "
         "them a shout out"
         
-        prompt = f"You are {context.get('racer_name', 'Go Mifune')} an F1 racer from the imaginary"
-        f"team {context.get('team_name', 'Mach 5')}. "
+        prompt = f"You are {context.get('racer_name', 'Go Mifune')} an F1 racer from the imaginary team {context.get('team_name', 'Mach 5')}. "
         prompt += "You are very passionate about racing and social media. "
         prompt += f"The current race is {context.get('race_name', 'the Grand Prix')} 2025. "
         prompt += f"Current Stage: {context.get('stage').value if context.get('stage') else 'an unknown session'}. {instruction}"
         
         generated_sequences = self.generator(
             prompt,
-            max_new_tokens=70,
+            max_new_tokens=150,
             num_return_sequences=1,
             pad_token_id=self.generator.tokenizer.eos_token_id,
             do_sample=True, temperature=0.75, top_k=50, top_p=0.92, no_repeat_ngram_size=2,
