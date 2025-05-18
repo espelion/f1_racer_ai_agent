@@ -27,7 +27,7 @@ class Racer:
         """
         self.state.record_result(result)
 
-    def speak_post_update(self, race_name: str):
+    def post_update(self, race_name: str):
         """
         Call post action.
         """
@@ -37,7 +37,7 @@ class Racer:
         self.action_simulator.post_status_update(post_text)
         return post_text
 
-    def act_reply_to_fan(self, fan_comment: str, race_name):
+    def reply_to_fan(self, fan_comment: str, race_name):
         """
         Call reply action.
         """
@@ -47,27 +47,21 @@ class Racer:
         self.action_simulator.reply_to_comment(reply_text, fan_comment)
         return reply_text
 
-    def act_like_post(self, post_content: str, author: str = "Trixie"):
+    def like_post(self, post_content: str, author: str = "Trixie"):
         """
         Call like action.
         """
         self.action_simulator.like_post(post_content, author)
 
-    def speak_post_with_mention(self, entity_to_mention: str, race_name: str, base_message: str = "Great job by {mention}!"):
+    def mention(self, entity_to_mention: str, race_name: str, base_message: str = "Great job!"):
         """
         A more advanced version would have the text_generator incorporate the mention naturally.
         For a simpler version, we can just append or use a template.
         """
         context = self.state.get_context()
         context["race_name"] = race_name
-
-        if "{mention}" in base_message:
-            full_post_text = base_message.format(mention=f"@{entity_to_mention}")
-        else:
-            full_post_text = f"{base_message} Big shoutout to @{entity_to_mention}!"
-        
-        if context["stage"] == Stage.RACE and context["result"] == Result.P1:
-            full_post_text += f" #Team{context['team_name']} #Winner"
-        
-        self.action_simulator.mention_entity(entity_to_mention, full_post_text)
-        return full_post_text
+        if not entity_to_mention:
+            entity_to_mention = "team"
+        mention_text = self.text_generator.generate_mention_post(context, entity_to_mention, base_message)
+        self.action_simulator.mention_entity(entity_to_mention, mention_text)
+        return mention_text
