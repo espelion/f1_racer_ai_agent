@@ -1,3 +1,6 @@
+"""
+Maintain the agent's state
+"""
 import logging
 from typing import Optional
 
