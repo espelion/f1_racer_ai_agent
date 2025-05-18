@@ -6,6 +6,7 @@ import random
 from abc import ABC, abstractmethod
 
 import google.generativeai as genai
+from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 
 from agent.utils import sentiment_analysis
 from project.const import Stage, TEMPLATES, Result
@@ -257,3 +258,118 @@ class GeminiTextGenerator(TextGenerator):
         prompt = self._create_gemini_prompt(context, instruction)
         LOGGER.debug(f"Gemini Mention Prompt:\n{prompt}")
         return self._generate_text_with_gemini(prompt)
+
+
+class TransformerTextGenerator(TextGenerator):
+    # TODO: Find a better light weight model, distilgpt2 sucks, 
+    # But also the resources presented to it are minimal in this demo
+    def __init__(self, model_name: str = "distilgpt2"):
+        self.generator = pipeline("text-generation", model=model_name)
+
+
+    def _create_prompt_for_post(self, context: dict) -> str:
+        # TODO: Prompts could be shorter and concise since the model is not that powerful
+        # And resource-starved
+        prompt = f"You are {context.get('racer_name', 'Go Mifune')} an F1 racer from the imaginary"
+        f"team {context.get('team_name', 'Mach 5')}. "
+        prompt += "You are very passionate about racing and social media; and engage a "
+        "lot with fans and strangers alike. "
+        prompt += f"The current race is {context.get('race_name', 'the Grand Prix')} 2025. "
+        current_stage: Stage = context.get('stage')
+        prompt += f"The current stage is {current_stage.value if current_stage else 'practice'}. "
+        current_result: Result | None = context.get('result')
+        if current_result:
+            prompt += f"Your last race result was {str(current_result)}. "
+        
+        if current_stage == Stage.RACE and current_result == Result.P1:
+            prompt += f"You just won the race (P1)! Write an ecstatic and thankful social media "
+            f"post. Mention your team, {context.get('team_name', 'the team')}, and the thrill of"
+            "victory. Include F1-style hashtags."
+        elif current_stage == Stage.RACE and current_result == Result.DNF:
+            prompt += f"You had a DNF (Did Not Finish) with your result being {str(current_result)}"
+            ". Write a disappointed but resilient social media post. Express determination"
+            "to bounce back. Include hashtags like #NeverGiveUp."
+        elif current_stage in [Stage.FP1, Stage.FP2, Stage.FP3]:
+            prompt += "Write a focused social media post about the current practice "
+            "session. Include hashtags."
+        else:
+            prompt += "Write a general social media post about F1. Include hashtags."
+        return prompt
+
+    def generate_post(self, context: dict) -> str:
+        prompt = self._create_prompt_for_post(context)
+        LOGGER.info(f"Prompt: {prompt}")
+        # These configs are arbirtary just to tweak a few things and squeeze some
+        # Better performance with the model
+        generated_sequences = self.generator(
+            prompt,
+            max_new_tokens=100,
+            num_return_sequences=1,
+            pad_token_id=self.generator.tokenizer.eos_token_id,
+            do_sample=True,
+            temperature=0.75,
+            top_k=50,
+            top_p=0.92,
+            no_repeat_ngram_size=2,
+            truncation=True
+        )
+        post_text = generated_sequences[0]['generated_text']
+        
+        # Clean up the prompt from the generated text if the model includes it
+        if post_text.startswith(prompt):
+             post_text = post_text[len(prompt):].strip()
+        return post_text
+
+
+    def _create_prompt_for_reply(self, context: dict, original_comment: str) -> str:
+        prompt = f"You are {context.get('racer_name', 'an F1 racer')}. You are very passionate about "
+        f"social media, and engage a lot with fans and strangers alike. A fan named @trixie commented"
+        f": '{original_comment}'. "
+        prompt += "Write a short, appreciative, and cool reply to this fan. Keep it brief. You can "
+        "check sentiment and re-iterate some of their thoughts."
+        return prompt
+
+    def generate_reply(self, context: dict, original_comment: str) -> str:
+        prompt = self._create_prompt_for_reply(context, original_comment)
+        LOGGER.info(f"Prompt: {prompt}")
+        generated_sequences = self.generator(
+            prompt,
+            max_new_tokens=70,
+            num_return_sequences=1,
+            pad_token_id=self.generator.tokenizer.eos_token_id,
+            do_sample=True,
+            temperature=0.7,
+            top_k=50,
+            top_p=0.9,
+            no_repeat_ngram_size=2,
+            truncation=True)
+        reply_text = generated_sequences[0]['generated_text']
+
+        if reply_text.startswith(prompt):
+            reply_text = reply_text[len(prompt):].strip()
+        return reply_text
+    
+    def generate_mention_post(self, context: dict, entity_to_mention: str, base_message: str) -> str:
+        instruction = f"Create a social media post that incorporates this idea: '{base_message}'. "
+        f"Make sure to prominently feature and praise '{entity_to_mention}' using an"
+        f"@{entity_to_mention} like on Twitter. Use relevant F1-style hashtags. You can give "
+        "them a shout out"
+        
+        prompt = f"You are {context.get('racer_name', 'Go Mifune')} an F1 racer from the imaginary"
+        f"team {context.get('team_name', 'Mach 5')}. "
+        prompt += "You are very passionate about racing and social media. "
+        prompt += f"The current race is {context.get('race_name', 'the Grand Prix')} 2025. "
+        prompt += f"Current Stage: {context.get('stage').value if context.get('stage') else 'an unknown session'}. {instruction}"
+        
+        generated_sequences = self.generator(
+            prompt,
+            max_new_tokens=70,
+            num_return_sequences=1,
+            pad_token_id=self.generator.tokenizer.eos_token_id,
+            do_sample=True, temperature=0.75, top_k=50, top_p=0.92, no_repeat_ngram_size=2,
+            truncation=True
+        )
+        post_text = generated_sequences[0]['generated_text']
+        if post_text.startswith(prompt):
+             post_text = post_text[len(prompt):].strip()
+        return post_text
