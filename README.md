@@ -121,9 +121,9 @@ _Follow these steps to get your development environment running._
 
 ### Using Gemini <a id="gemini"></a>
 
-If you would like to use the *Gemini Text Generator* you will need to have a working Google API KEY with Gemini API permissions. This can be created easily on the GCP console or a free one on *Makersuite*
+If you would like to use the **Gemini Text Generator** you will need to have a working Google API KEY with Gemini API permissions. This can be created easily on the GCP console or a free one on **Makersuite**.
 You will need to have an environment file called `.env` on the project root, i.e same level as the `f1_agent.py` file. You will need a singular entry of `GOOGLE_API_KEY=yor-api-key`. On the Dockerfile you will also 
-need to add this environment variable with the `ENV` command. When you start up you project step 4 of <a href="#installation">Installation</a> will then be the start up args:
+need to add this environment variable with the `ENV` command. When you start up you project, step 4 of <a href="#installation">Installation</a> will then be the start up args:
 
 ```sh
 python f1_agent.py --text-generator gemini
