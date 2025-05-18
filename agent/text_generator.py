@@ -240,9 +240,9 @@ class GeminiTextGenerator(TextGenerator):
         return self._generate_text_with_gemini(prompt)
 
     def generate_reply(self, context: dict, original_comment: str) -> str:
-        instruction = f"A fan commented: {original_comment}. Write a short, appreciative, and cool"
-        "reply. Keep it brief, friendly, and authentic. Acknowledge their sentiment if appropriate. "
-        "Do not dwell into negativity. Always use F1 enthusiasm and character."
+        instruction = f"A fan, @trixie, commented: {original_comment}. Write a short, appreciative,"
+        "and cool reply. Keep it brief, friendly, and authentic. Acknowledge their sentiment "
+        "if appropriate. Do not dwell into negativity. Always use F1 enthusiasm and character."
         prompt = self._create_gemini_prompt(context, instruction)
         LOGGER.debug(f"Gemini Reply Prompt:\n{prompt}")
         return self._generate_text_with_gemini(prompt)
