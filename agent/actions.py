@@ -1,3 +1,6 @@
+"""
+Simulate some actions for the Racer.
+"""
 import logging
 
 LOGGER = logging.getLogger(__name__)
