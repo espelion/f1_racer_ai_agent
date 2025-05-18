@@ -283,9 +283,9 @@ class TransformerTextGenerator(TextGenerator):
 
     def generate_post(self, context: dict) -> str:
         prompt = self._create_prompt_for_post(context)
-        LOGGER.info(f"Prompt: {prompt}")
+        LOGGER.debug(f"Prompt: {prompt}")
         # These configs are arbirtary just to tweak a few things and squeeze some
-        # Better performance with the model
+        # Better performance with the model, the model is not good!
         generated_sequences = self.generator(
             prompt,
             max_new_tokens=200,
@@ -313,7 +313,7 @@ class TransformerTextGenerator(TextGenerator):
 
     def generate_reply(self, context: dict, original_comment: str) -> str:
         prompt = self._create_prompt_for_reply(context, original_comment)
-        LOGGER.info(f"Prompt: {prompt}")
+        LOGGER.debug(f"Prompt: {prompt}")
         generated_sequences = self.generator(
             prompt,
             max_new_tokens=150,
