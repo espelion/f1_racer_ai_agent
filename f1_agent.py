@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from agent.racer import Racer
-from agent.text_generator import TemplateBasedTextGenerator, TextGenerator
+from agent.text_generator import GeminiTextGenerator, TemplateBasedTextGenerator, TextGenerator
 from project.const import parse_stage_input
 from project.logger import setup_logging
 
@@ -124,16 +124,26 @@ if __name__ == "__main__":
     parser.add_argument(
         "--text-generator",
         type=str,
-        choices=["basic"],
+        choices=["basic", "gemini"],
         default="basic",
-        help="Specify the text generator: 'basic'."
+        help="Specify the text generator: 'basic' (template), 'gemini' "
+        "(Google Gemini). Default: 'basic'."
+    )
+    parser.add_argument(
+        "--model-name",
+        type=str,
+        default="distilgpt2",
+        help="Specify the Hugging Face model name to use if"
+         " --text-generator is 'transformer'. Default is 'distilgpt2'."
     )
     args = parser.parse_args()
 
-    # TODO: Add different text generators
     text_gen: TextGenerator
     if args.text_generator == "basic":
         text_gen = TemplateBasedTextGenerator()
+    elif args.text_generator == "gemini":
+        LOGGER.info("Using GeminiTextGenerator.")
+        text_gen = GeminiTextGenerator()
     else:
         LOGGER.info("Using TemplateBasedTextGenerator.")
         text_gen = TemplateBasedTextGenerator()
