@@ -31,6 +31,7 @@
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#gemini">Using Gemini</a></li>
+        <li><a href="#transformer">Using Transformers</a></li>
         <li><a href="#docker">Docker</a></li>
       </ul>
     </li>
@@ -134,6 +135,19 @@ _NB: Docker process remains the same._
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
+### Using a Transformer <a id="transformer"></a>
+
+If you would like to use the **Transformer Text Generator** you might need to have good machine with space since the <a href="https://github.com/espelion/f1_racer_ai_agent/blob/feature/transformer-generator/requirements.txt">environment</a> is quite huge. The model used is `distilgpt2` for text generation; and as big as the enviornment is (by Python env standards) the model leaves much to be desired and was just added to showcase the interface nature of text generators within the project. When you start up you project, step 4 of <a href="#installation">Installation</a> will then be the start up args:
+
+```sh
+python f1_agent.py --text-generator transformer
+```
+
+_NB: Docker process remains the same._
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
 ### Docker <a id="docker"></a>
 
 _The application includes a `Dockerfile` for easy containerization and execution._
@@ -148,7 +162,7 @@ _The application includes a `Dockerfile` for easy containerization and execution
     ```
     To run with specific arguments (e.g., explicitly setting the text generator or gemini generator):
     ```sh
-    docker run -it --rm f1-racer-agent --text-generator <basic or gemini>
+    docker run -it --rm f1-racer-agent --text-generator <basic or gemini or transformer>
     ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
