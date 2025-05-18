@@ -3,6 +3,7 @@ FROM python:3.11.9-alpine
 WORKDIR /app
 
 COPY f1_agent.py .
+COPY logger.json .
 
 COPY agent/ ./agent/
 COPY project/ ./project/
