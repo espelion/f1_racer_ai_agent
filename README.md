@@ -1,7 +1,5 @@
 <!-- For template See:https://github.com/othneildrew/Best-README-Template/blob/master/README.md  -->
 
-[//]: # (<a id="top"></a>)
-
 <br />
 <div align="center">
   <a href="https://github.com/praekelt/eskom-bot">
@@ -18,7 +16,7 @@
 </div>
 
 
-<details>
+<details id="top">
   <summary>Table of Contents</summary>
   <ol>
     <li>
@@ -156,7 +154,7 @@ Type `help` in the agent's command prompt to see the list of available commands 
   reply <fan_comment_text>        - Agent generates a 'reply' to the given fan comment.
   mention <entity> [message]      - Agent 'posts' mentioning an entity. Message is optional (defaults to 'Great job by {mention}!').
                                     Example: mention MyMechanic
-                                    Example: mention Sponsor Great race thanks to {mention}!
+                                    Example: mention Sponsor Great race thanks!
   like "<post_content>" [author]  - Agent 'likes' a post. Author is optional (defaults to 'Trixie').
                                     Example: like "Well done team" - Note the ""
                                     Example: like "Good fight" Max - Note the ""
@@ -166,21 +164,22 @@ Type `help` in the agent's command prompt to see the list of available commands 
 
 Your agent should be able to generate outputs similar to the following (depending on its internal "thinking" state):
 
-*   **(FP1, Res: N/A, Race: SilverstoneGP)** > stage q3
-    **(Q3, Res: N/A, Race: SilverstoneGP)** >
-*   **(Q3, Res: N/A, Race: SilverstoneGP)** > result p2
-    **(Q3, Res: P2, Race: SilverstoneGP)** >
-*   **(Q3, Res: P2, Race: SilverstoneGP)** > post
-    Agent posted: Fantastic result! P2 on the grid for #SilverstoneGP GP! The Mach 5 was flying in Q3. #TeamMach 5 did an amazing job. Great spot to attack from tomorrow! #F1 #Qualifying #FrontRowsCalling 💨
-*   **(Q3, Res: P2, Race: SilverstoneGP)** > mention max What a great race dude!
-    Agent posted with mention: What a great race dude!, Big shoutout to @max!
-*   **(Q3, Res: P2, Race: SilverstoneGP)** > like "Max is the one" trixie
-    2025-05-18T14:22:56 INFO agent.actions:28 Action: Liking post from trixie: "Max is the one"
-*   **(Q3, Res: P2, Race: SilverstoneGP)** > reply I love you Go!
-    Agent replied: Go Mifune replies: Love the energy! 🚀 Your cheers make a massive difference out on track. So glad you enjoyed it! #Mach5Speed #BestFans
-*   **(Q3, Res: P2, Race: SilverstoneGP)** > q
-    2025-05-18T14:23:33 INFO __main__:50 Exiting interactive mode. 
-    
+```
+(FP1, Res: N/A, Race: SilverstoneGP) > stage q3
+(Q3, Res: N/A, Race: SilverstoneGP) >
+(Q3, Res: N/A, Race: SilverstoneGP) > result p2
+(Q3, Res: P2, Race: SilverstoneGP) >
+(Q3, Res: P2, Race: SilverstoneGP) > post
+Agent posted: Fantastic result! P2 on the grid for #SilverstoneGP GP! The Mach 5 was flying in Q3. #TeamMach 5 did an amazing job. Great spot to attack from tomorrow! #F1 #Qualifying #FrontRowsCalling 💨
+(Q3, Res: P2, Race: SilverstoneGP) > mention max What a great race dude!
+Agent posted with mention: What a great race dude!, Big shoutout to @max!
+(Q3, Res: P2, Race: SilverstoneGP) > like "Max is the one" trixie
+2025-05-18T14:22:56 INFO agent.actions:28 Action: Liking post from trixie: "Max is the one"
+(Q3, Res: P2, Race: SilverstoneGP) > reply I love you Go!
+Agent replied: Go Mifune replies: Love the energy! 🚀 Your cheers make a massive difference out on track. So glad you enjoyed it! #Mach5Speed #BestFans
+(Q3, Res: P2, Race: SilverstoneGP) > q
+2025-05-18T14:23:33 INFO __main__:50 Exiting interactive mode.
+```
 
 It is important the set an initial state via `stage` nad `result` before the agent can engage.
 
