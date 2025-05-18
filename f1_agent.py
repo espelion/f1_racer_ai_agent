@@ -79,32 +79,32 @@ def interactive_loop(agent: Racer):
                 else:
                     LOGGER.warning("Usage: racename <new_race_name>")
             elif command == "post":
-                post_text = agent.speak_post_update(race_name=current_race_name)
+                post_text = agent.post_update(race_name=current_race_name)
                 print(f"Agent posted: {post_text}")
             elif command == "reply":
                 if args_str:
-                    reply_text = agent.act_reply_to_fan(fan_comment=args_str, race_name=current_race_name)
+                    reply_text = agent.reply_to_fan(fan_comment=args_str, race_name=current_race_name)
                     print(f"Agent replied: {reply_text}")
                 else:
                     LOGGER.warning("Usage: reply <fan_comment_text>")
             elif command == "mention":
                 mention_args = args_str.split(" ", 1)
-                entity = mention_args[0] if mention_args else ""
+                entity = mention_args[0] if mention_args else "team"
                 message = mention_args[1] if len(mention_args) > 1 else "Great job by {mention}!"
                 if entity:
-                    post_text = agent.speak_post_with_mention(entity_to_mention=entity, base_message=message, race_name=current_race_name)
-                    print(f"Agent posted with mention: {post_text}")
+                    post_text = agent.mention(entity_to_mention=entity, base_message=message, race_name=current_race_name)
+                    print(f'Agent posted with mention: {post_text}')
                 else:
                     LOGGER.warning("Usage: mention <entity_to_mention> [base_message]")
             elif command == "like":
-                like_args = args_str.split(" ", 1)
-                content = like_args[0] if like_args else ""
+                like_args = args_str.split('" ', 1)
+                content = f'{like_args[0]}"' if like_args else ""
                 author = like_args[1] if len(like_args) > 1 else None
                 if content:
                     if author:
-                        agent.act_like_post(post_content=content, author=author)
+                        agent.like_post(post_content=content, author=author)
                     else:
-                        agent.act_like_post(post_content=content)
+                        agent.like_post(post_content=content)
                 else:
                     LOGGER.warning("Usage: like <post_content> [author]")
             else:
