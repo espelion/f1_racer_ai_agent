@@ -124,7 +124,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--text-generator",
         type=str,
-        choices=["basic", "gemini"],
+        choices=["basic", "gemini", "transformer"],
         default="basic",
         help="Specify the text generator: 'basic' (template), 'gemini' "
         "(Google Gemini). Default: 'basic'."
