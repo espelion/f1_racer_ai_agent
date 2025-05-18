@@ -22,7 +22,7 @@ def print_help():
     print("  reply <fan_comment_text>      - Agent generates a 'reply' to the given fan comment.")
     print("  mention <entity> [message]    - Agent 'posts' mentioning an entity. Message is optional (defaults to 'Great job by {mention}!').")
     print("                                  Example: mention MyMechanic")
-    print("                                  Example: mention Sponsor \"Great race thanks to {mention}!\"")
+    print("                                  Example: mention Sponsor Great race thanks to {mention}!")
     print("  like <post_content> [author]  - Agent 'likes' a post. Author is optional (defaults to 'Trixie').")
     print("                                  Example: like \"Well done team\"")
     print("                                  Example: like \"Good fight\" Max")
