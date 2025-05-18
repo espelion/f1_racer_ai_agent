@@ -6,16 +6,11 @@ import random
 import os
 from abc import ABC, abstractmethod
 
+from agent.utils import sentiment_analysis
 from project.const import Stage, TEMPLATES, Result
 
 
 LOGGER = logging.getLogger(__name__)
-
-try:
-    from nltk.sentiment.vader import SentimentIntensityAnalyzer
-    import nltk
-except ImportError:
-    LOGGER.warning("NLTK not installed. Sentiment analysis in TemplateBasedTextGenerator will be basic. Run 'pip install nltk'")
 
 # TODO: Maybe a Protocol to keep up with the times
 class TextGenerator(ABC):
@@ -38,22 +33,7 @@ class TemplateBasedTextGenerator(TextGenerator):
     """
     def __init__(self):
         self.templates = TEMPLATES
-        self.vocab = {
-            "positive_adj": ["amazing", "fantastic", "incredible", "superb"],
-            "determination": ["push hard", "give it my all", "never give up", "focused"],
-            "team_spirit": ["team effort", "crew did a great job", "thanks to the factory"],
-        }
 
-        self.sentiment_analyzer = None
-        if 'SentimentIntensityAnalyzer' in globals():
-            try:
-                # Download VADER lexicon if not already present
-                nltk.data.find('sentiment/vader_lexicon.zip')
-            except LookupError:
-                LOGGER.warning("VADER lexicon not found. Attempting to download for NLTK sentiment analysis.")
-                nltk.download('vader_lexicon', quiet=True)
-            self.sentiment_analyzer = SentimentIntensityAnalyzer()
-            LOGGER.info("VADER sentiment analyzer initialized for TemplateBasedTextGenerator.")
     def _get_race_name_placeholder(self, context: dict):
         return context.get("race_name", "SilverstoneGP")
 
@@ -121,44 +101,37 @@ class TemplateBasedTextGenerator(TextGenerator):
             stage_abbr=stage_abbr,
             result_detail=result_detail_for_quali
         )
-    
-    def sentiment_analysis(self, text: str) -> float:
-        # Calculate the sentiment
-        sentiment_scores = self.sentiment_analyzer.polarity_scores(text)
-        compound_score = sentiment_scores['compound']
-        return compound_score
 
     def generate_reply(self, context: dict, original_comment: str) -> str:
         racer_name = context.get("racer_name", "I")
-        
-        if self.sentiment_analyzer:
-            compound_score = self.sentiment_analysis(original_comment)
+        compound_score = sentiment_analysis(original_comment)
 
-            LOGGER.debug(f"Fan comment: '{original_comment}', Sentiment (compound): {compound_score}")
+        LOGGER.debug(f"Fan comment: '{original_comment}', Sentiment (compound): {compound_score}")
 
-            if compound_score >= 0.05:
-                reply_list = self.templates["reply_positive"]
-            elif compound_score <= -0.05:
-                reply_list = self.templates["reply_negative"]
-            else:
-                reply_list = self.templates["reply_neutral"]
-        else:
+        if compound_score >= 0.05:
+            reply_list = self.templates["reply_positive"]
+        elif compound_score <= -0.05:
+            reply_list = self.templates["reply_negative"]
+        elif compound_score is None:
             # Fallback if NLTK/VADER is not available
             reply_list = self.templates["reply_neutral"]
+        else:
+            reply_list = self.templates["reply_neutral"]
+    
 
         return f"{racer_name} replies: {random.choice(reply_list)}"
 
     def generate_mention_post(self, context: dict, entity_to_mention: str, base_message: str) -> str:
-        team_name = context.get("team_name", "Mach 5")
-        race_name = self._get_race_name_placeholder(context)
-        message = base_message.format(mention=entity_to_mention)
-
-        compound_score = self.sentiment_analysis(message)
+        compound_score = sentiment_analysis(base_message)
         if compound_score >= 0.05:
-            quoted = f"{message} Big shoutout from #{team_name} at #{race_name}!"
+            message = f"{base_message}, Big shoutout to @{entity_to_mention}!"
         elif compound_score <= -0.05:
-            quoted = f"{message} We take the good and the bad, shoutout from #{team_name} at #{race_name}!"
+            message = f"{base_message} But still a huge shoutout to @{entity_to_mention}!"
         else:
-            quoted = f"{message} Get in! #{team_name} at #{race_name}!"
+            # Fallback if NLTK/VADER is not available or neutral
+            message = f"{base_message} Shoutout to @{entity_to_mention}!"
+        
+        if context["stage"] == Stage.RACE and context["result"] == Result.P1:
+            message += f" #Team{context['team_name']} #Winner"
 
-        return quoted
+        return message
