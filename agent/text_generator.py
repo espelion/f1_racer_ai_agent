@@ -3,11 +3,13 @@ Text generators as Interfaces/Abstract Base Class
 """
 import logging
 import random
-import os
 from abc import ABC, abstractmethod
+
+import google.generativeai as genai
 
 from agent.utils import sentiment_analysis
 from project.const import Stage, TEMPLATES, Result
+from project.setings import get_key
 
 
 LOGGER = logging.getLogger(__name__)
@@ -135,3 +137,122 @@ class TemplateBasedTextGenerator(TextGenerator):
             message += f" #Team{context['team_name']} #Winner"
 
         return message
+
+
+class GeminiTextGenerator(TextGenerator):
+    def __init__(self):
+        api_key = get_key()
+        if not api_key:
+            LOGGER.error("GOOGLE_API_KEY not found in environment variables." \
+            " Please set it in your .env file.")
+            raise ValueError("GOOGLE_API_KEY not found. Cannot initialize GeminiTextGenerator.")
+        
+        try:
+            genai.configure(api_key=api_key)
+            # Gemini-1.5-flash is still fast and cheaper than the 
+            # Newer 2.0 models whilst being a capable LLM
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            LOGGER.info(f"GeminiTextGenerator initialized with model: {self.model.model_name}")
+        except Exception as e:
+            LOGGER.error(f"Failed to configure Gemini or initialize model: {e}", exc_info=True)
+            raise
+
+    def _generate_text_with_gemini(self, prompt_text: str) -> str:
+        try:
+            LOGGER.debug(f"Prompt: {prompt_text}")
+            # TODO: Configure generation parameters, but not necessary in this demo
+            generation_config = genai.types.GenerationConfig(
+                temperature=0.5,
+                max_output_tokens=150
+            )
+            response = self.model.generate_content(
+                prompt_text,
+                generation_config=generation_config
+            )
+
+            if not response.candidates:
+                block_reason_message = "Unknown reason"
+                # If content is blocked, return reason
+                if response.prompt_feedback and response.prompt_feedback.block_reason:
+                    block_reason_message = response.prompt_feedback.block_reason_message or \
+                        response.prompt_feedback.block_reason.name
+                LOGGER.warning(
+                    f"Content generation blocked by Gemini API. Reason: {block_reason_message}"
+                    )
+                return f"[Content blocked by API: {block_reason_message}]"
+            # If there is generated content, return it
+            if response.candidates[0].content and response.candidates[0].content.parts:
+                generated_text = "".join(part.text for part in response.candidates[0].content.parts)
+                return generated_text.strip()
+            else:
+                LOGGER.warning("Gemini API returned a candidate with no content parts.")
+                return "Sorry, I received an unexpected response format from the AI."
+
+        except Exception as e:
+            LOGGER.error(f"Error calling Gemini API: {e}", exc_info=True)
+            return "An error occurred while trying to generate text with Gemini."
+
+    def _create_gemini_prompt(self, context: dict, task_instruction: str) -> str:
+        racer_name = context.get('racer_name', 'Go Mifune')
+        team_name = context.get('team_name', 'Mach 5')
+        
+        prompt_parts = [
+            f"You are {racer_name}, a charismatic and highly skilled Formula 1 racer for the"
+            f" {team_name} team.",
+            "Your social media persona is engaging, passionate, and authentic. You often "
+            "share insights, express emotions clearly, and interact positively with fans.",
+            f"Current Race Event: {context.get('race_name', 'SilverstoneGP')} 2025.",
+        ]
+
+        current_stage: Stage = context.get('stage')
+        prompt_parts.append(
+            f"Current Stage: {current_stage.value if current_stage else 'practice 1'}."
+        )
+        current_result: Result | None = context.get('result')
+        if current_result:
+            prompt_parts.append(f"Most Recent Result: {str(current_result)}.")
+        
+        prompt_parts.append(f"\nYour Task: {task_instruction}")
+        return "\n".join(prompt_parts)
+
+    def generate_post(self, context: dict) -> str:
+        # Fine tuned prompts for different scenarios
+        current_stage: Stage = context.get('stage')
+        if current_stage == Stage.RACE and context.get('result') == Result.P1:
+            instruction = f"Craft an ecstatic and thankful social media post celebrating your" \
+                f" P1 victory. Highlight the team's effort ({context.get('team_name', 'Mach 5')})"\
+                " and the thrill of the win. Use F1-style hashtags."
+            
+        elif current_stage == Stage.RACE and context.get('result') == Result.DNF:
+            instruction = "Compose a social media post reflecting disappointment about a DNF, "
+            "but also showing resilience and determination to bounce back. Include hashtags "
+            "like #NeverGiveUp."
+        elif current_stage in [Stage.FP1, Stage.FP2, Stage.FP3]:
+            instruction = f"Write a focused social media post about the current"
+            f"{current_stage.value if current_stage else 'practice'} session, mentioning car "
+            "feel or data gathering. Include relevant hashtags."
+        else:
+            instruction = "Create a general social media update suitable for an F1 racer, reflecting"
+            " the current context. Include appropriate hashtags."
+        
+        prompt = self._create_gemini_prompt(context, instruction)
+        LOGGER.debug(f"Gemini Post Prompt:\n{prompt}")
+        return self._generate_text_with_gemini(prompt)
+
+    def generate_reply(self, context: dict, original_comment: str) -> str:
+        instruction = f"A fan commented: {original_comment}. Write a short, appreciative, and cool"
+        "reply. Keep it brief, friendly, and authentic. Acknowledge their sentiment if appropriate. "
+        "Do not dwell into negativity. Always use F1 enthusiasm and character."
+        prompt = self._create_gemini_prompt(context, instruction)
+        LOGGER.debug(f"Gemini Reply Prompt:\n{prompt}")
+        return self._generate_text_with_gemini(prompt)
+
+    def generate_mention_post(
+            self, context: dict, entity_to_mention: str, base_message: str
+        ) -> str:
+        instruction = f"Create a social media post that incorporates this idea: '{base_message}'. "
+        f"Make sure to prominently feature and praise '{entity_to_mention}' using an"
+        f"@{entity_to_mention}. Use relevant F1-style hashtags. You can give them a shout out"
+        prompt = self._create_gemini_prompt(context, instruction)
+        LOGGER.debug(f"Gemini Mention Prompt:\n{prompt}")
+        return self._generate_text_with_gemini(prompt)
