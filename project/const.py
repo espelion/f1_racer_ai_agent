@@ -88,3 +88,32 @@ def parse_stage_input(user_input: str) -> Stage | None:
         return getattr(Stage, f"Q{num}", None)
 
     return None
+
+
+class Result(Enum):
+    P1 = "P1"
+    P2 = "P2"
+    P3 = "P3"
+    P4 = "P4"
+    P5 = "P5"
+    P6 = "P6"
+    P7 = "P7"
+    P8 = "P8"
+    P9 = "P9"
+    P10 = "P10"
+    P11 = "P11"
+    P12 = "P12"
+    P13 = "P13"
+    P14 = "P14"
+    P15 = "P15"
+    P16 = "P16"
+    P17 = "P17"
+    P18 = "P18"
+    P19 = "P19"
+    P20 = "P20"
+    DNF = "DNF"
+    TOP_3 = "Top 3"
+    TOP_5 = "Top 5"
+
+    def __str__(self):
+        return self.value
