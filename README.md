@@ -131,7 +131,7 @@ _NB: Docker process remains the same._
 
 ### Using a Transformer <a id="transformer"></a>
 
-If you would like to use the **Transormer Text Generator** you will need to use the <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/transformer-generator#transformer">transformer</a> branch of the codebase. It has been separated from the basic implementation to keep Docker containers light-weight depending on your needs. Some of the packages used run some of these computations are quite large and bloat the environments and containers, hence this version is kept really basic.
+If you would like to use the **Transormer Text Generator** you will need to use the <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/transformer-generator#transformer">transformer</a> branch of the codebase. It has been separated from the basic implementation to keep Docker containers light-weight depending on your needs. Some of the packages used to run some of these computations are quite large and bloat the environments and containers, hence this version is kept really basic.
 
 _NB: Docker process remains the same._
 
