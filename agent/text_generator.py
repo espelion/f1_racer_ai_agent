@@ -161,9 +161,9 @@ class GeminiTextGenerator(TextGenerator):
         try:
             LOGGER.debug(f"Prompt: {prompt_text}")
             # TODO: Configure generation parameters, but not necessary in this demo
+            # Adding a token limit tends to truncate Gemini's though proccess :) 
             generation_config = genai.types.GenerationConfig(
-                temperature=0.5,
-                max_output_tokens=150
+                temperature=0.5
             )
             response = self.model.generate_content(
                 prompt_text,
@@ -252,7 +252,8 @@ class GeminiTextGenerator(TextGenerator):
         ) -> str:
         instruction = f"Create a social media post that incorporates this idea: '{base_message}'. "
         f"Make sure to prominently feature and praise '{entity_to_mention}' using an"
-        f"@{entity_to_mention}. Use relevant F1-style hashtags. You can give them a shout out"
+        f"@{entity_to_mention} like on Twitter. Use relevant F1-style hashtags. You can give "
+        "them a shout out"
         prompt = self._create_gemini_prompt(context, instruction)
         LOGGER.debug(f"Gemini Mention Prompt:\n{prompt}")
         return self._generate_text_with_gemini(prompt)
