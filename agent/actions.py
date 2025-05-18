@@ -23,9 +23,9 @@ class ActionSimulator:
         LOGGER.debug(f"Action: Posting new status update:")
         LOGGER.debug(f"Agent Post: \"{generated_post_text}\"")
 
-    def like_post(self, post_content: str, author: str = "AnotherRacer"):
+    def like_post(self, post_content: str, author: str = "Trixie"):
         # TODO: If there was an actual liking API, the logic would go here
-        LOGGER.debug(f"Action: Liking post from {author}: \"{post_content[:50]}...\"")
+        LOGGER.info(f'Action: Liking post from {author}: {post_content}')
 
     def mention_entity(self, entity_name: str, generated_text_with_mention: str):
         # TODO: If there was an actual mentioning API, the logic would go here
