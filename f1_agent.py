@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from agent.racer import Racer
-from agent.text_generator import GeminiTextGenerator, TemplateBasedTextGenerator, TextGenerator
+from agent.text_generator import GeminiTextGenerator, TemplateBasedTextGenerator, TextGenerator, TransformerTextGenerator
 from project.const import parse_stage_input
 from project.logger import setup_logging
 
@@ -139,8 +139,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     text_gen: TextGenerator
-    if args.text_generator == "basic":
-        text_gen = TemplateBasedTextGenerator()
+    if args.text_generator == "transformer":
+        LOGGER.info(f"Using TransformerTextGenerator with model: {args.model_name}")
+        text_gen = TransformerTextGenerator(model_name=args.model_name)
     elif args.text_generator == "gemini":
         LOGGER.info("Using GeminiTextGenerator.")
         text_gen = GeminiTextGenerator()
