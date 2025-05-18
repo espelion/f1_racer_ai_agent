@@ -48,7 +48,7 @@ This project introduces the F1 Racer AI Agent, a Python-based application design
 
 
 ### Built With <a id="built-with"></a>
-This F1 Racer AI Agent is built with `Python 3.11` and is designed for containerization using `Docker`. The agent's text generation can be extended with NLP libraries such as NLTK or Transformers (e.g., from Hugging Face), and potentially leverage Large Language Models like Gemini, though the current primary implementation uses a template-based approach.
+This F1 Racer AI Agent is built with `Python 3.11` and is designed for containerization using `Docker`. The agent's text generation can be extended with NLP libraries such as NLTK or Transformers (e.g., from Hugging Face), and potentially leverage Large Language Models like <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/gemini-generator#gemini">Gemini</a>, though the current primary implementation uses a template-based approach.
 * [![Python][Python]][Python-url]
 * [![Docker][Docker]][Docker-url]
 * [![NLTK][NLTK]][NLTK-url]
