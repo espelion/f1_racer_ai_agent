@@ -30,6 +30,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#gemini">Using Gemini</a></li>
         <li><a href="#docker">Docker</a></li>
       </ul>
     </li>
@@ -116,6 +117,16 @@ _Follow these steps to get your development environment running._
     ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+
+### Using Gemini <a id="gemini"></a>
+
+If you would like to use the **Gemini Text Generator** you will need to use the <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/gemini-generator#gemini">gemini</a> branch of the codebase. It has been separated from the basic implementation to keep Docker containers light-weight depending on your needs.
+
+_NB: Docker process remains the same._
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 
 ### Docker <a id="docker"></a>
 
