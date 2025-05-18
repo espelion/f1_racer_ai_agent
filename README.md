@@ -30,6 +30,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#gemini">Using Gemini</a></li>
         <li><a href="#docker">Docker</a></li>
       </ul>
     </li>
@@ -117,6 +118,22 @@ _Follow these steps to get your development environment running._
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+
+### Using Gemini <a id="gemini"></a>
+
+If you would like to use the *Gemini Text Generator* you will need to have a working Google API KEY with Gemini API permissions. This can be created easily on the GCP console or a free one on *Makersuite*
+You will need to have an environment file called `.env` on the project root, i.e same level as the `f1_agent.py` file. You will need a singular entry of `GOOGLE_API_KEY=yor-api-key`. On the Dockerfile you will also 
+need to add this environment variable with the `ENV` command. When you start up you project step 4 of <a href="#installation">Installation</a> will then be the start up args:
+
+```sh
+python f1_agent.py --text-generator gemini
+```
+
+_NB: Docker process remains the same._
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
 ### Docker <a id="docker"></a>
 
 _The application includes a `Dockerfile` for easy containerization and execution._
@@ -129,9 +146,9 @@ _The application includes a `Dockerfile` for easy containerization and execution
     ```sh
     docker run -it --rm f1-racer-agent
     ```
-    To run with specific arguments (e.g., explicitly setting the text generator):
+    To run with specific arguments (e.g., explicitly setting the text generator or gemini generator):
     ```sh
-    docker run -it --rm f1-racer-agent --text-generator basic
+    docker run -it --rm f1-racer-agent --text-generator <basic or gemini>
     ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -165,19 +182,38 @@ Type `help` in the agent's command prompt to see the list of available commands 
 Your agent should be able to generate outputs similar to the following (depending on its internal "thinking" state):
 
 ```
-(FP1, Res: N/A, Race: SilverstoneGP) > stage q3
-(Q3, Res: N/A, Race: SilverstoneGP) >
-(Q3, Res: N/A, Race: SilverstoneGP) > result p2
-(Q3, Res: P2, Race: SilverstoneGP) >
-(Q3, Res: P2, Race: SilverstoneGP) > post
-Agent posted: Fantastic result! P2 on the grid for #SilverstoneGP GP! The Mach 5 was flying in Q3. #TeamMach 5 did an amazing job. Great spot to attack from tomorrow! #F1 #Qualifying #FrontRowsCalling 💨
-(Q3, Res: P2, Race: SilverstoneGP) > mention max What a great race dude!
-Agent posted with mention: What a great race dude!, Big shoutout to @max!
-(Q3, Res: P2, Race: SilverstoneGP) > like "Max is the one" trixie
-2025-05-18T14:22:56 INFO agent.actions:28 Action: Liking post from trixie: "Max is the one"
-(Q3, Res: P2, Race: SilverstoneGP) > reply I love you Go!
-Agent replied: Go Mifune replies: Love the energy! 🚀 Your cheers make a massive difference out on track. So glad you enjoyed it! #Mach5Speed #BestFans
-(Q3, Res: P2, Race: SilverstoneGP) > q
+(FP1, Res: N/A, Race: SilverstoneGP) > stage fp3
+(FP3, Res: N/A, Race: SilverstoneGP) >
+(FP3, Res: N/A, Race: SilverstoneGP) > result pole
+(FP3, Res: P1, Race: SilverstoneGP) >
+(FP3, Res: P1, Race: SilverstoneGP) > post
+Agent posted: ⚡️ Silverstone, BABY! ⚡️
+
+Just finished FP3 and feeling absolutely ELECTRIC!  P1️⃣  Couldn't be happier with the Mach 5's performance today.  The car felt incredible – glued to the track, responsive, a true dream to drive.  Massive shoutout to the entire team; the pit crew, the engineers, everyone!  This is a testament to their hard work and dedication.  
+
+Silverstone is always a special track, and the atmosphere here is buzzing!  The fans are amazing – you guys are the best fuel a racer could ask for.  Hearing your cheers gives me goosebumps.
+
+But let's not get ahead of ourselves. Qualifying is tomorrow, and that's where the real battle begins.  We're going to keep pushing, keep improving, and keep aiming for the top.  
+
+Bring on Qualifying!  #SilverstoneGP #F1 #Mach5 #P1 #FP3 #BritishGP #GoMifune #Formula1 #TeamworkMakesTheDreamWork
+(FP3, Res: P1, Race: SilverstoneGP) > racename SuzukaGP
+2025-05-18T22:47:58 INFO __main__:78 Current race name set to: SuzukaGP
+(FP3, Res: P1, Race: SuzukaGP) >
+(FP3, Res: P1, Race: SuzukaGP) > stage race
+(RACE, Res: P1, Race: SuzukaGP) >
+(RACE, Res: P1, Race: SuzukaGP) > result p4
+(RACE, Res: P4, Race: SuzukaGP) > 
+(RACE, Res: P4, Race: SuzukaGP) > post
+Agent posted: ⚡️SUZUKA GP 2025 - WHAT A RACE!⚡️
+
+Guys, what a rollercoaster that was!  P4 today at Suzuka, and honestly, I'm buzzing despite not quite grabbing that podium.  The Mach 5 felt incredible through the Esses, but that last-lap battle with Ricciardo was *intense*.  He pushed me to the absolute limit, and I gave it everything I had.  So close to that P3, but we'll take P4 with pride!  💪
+
+Huge thanks to the entire Mach 5 team – you guys are absolute legends.  The pit stops were lightning-fast, the strategy was spot-on, and the car was a dream to drive (even if I did push it a little hard 😉).  And a massive shout-out to all the incredible fans here at Suzuka! Your energy is electrifying, and hearing you roar gave me the extra push I needed.  🇯🇵❤️
+
+Already looking forward to Austin!  Let's keep pushing for that top step.  What did you guys think of the race?  Let me know in the comments! 👇 #SuzukaGP #F1 #Mach5 #GoMifune #NeverGiveUp #Formula1 #JapaneseGP #RacingHeart
+(RACE, Res: P4, Race: SuzukaGP) > reply You did best Go, but lost a lot of momentum on those last chicanes everytime :(
+Agent replied: Hey @trixie! Thanks so much for the support!  You're absolutely right, those Suzuka chicanes were a real beast this time around.  Lost a bit of precious time there, no doubt.  P4 isn't bad, but I know I could've pushed harder.  Already analyzing the data to see where I can improve for next time!  Thanks again for cheering me on!  Onwards to the next one! 💪🏎️ #SuzukaGP #Mach5 #NeverGiveUp
+(RACE, Res: P4, Race: SuzukaGP) > q
 2025-05-18T14:23:33 INFO __main__:50 Exiting interactive mode.
 ```
 
