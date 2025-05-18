@@ -80,7 +80,7 @@ f1_agent_project/
 └── README.md
 ```
 
-This F1 Racer AI Agent runs on `Python 3.11`. It utilizes either a basic logging setup or a more nuanced logging set up using a dict config located at logger.json as seen on above, `logger.py` loads the config or defaults to a basic logger. For local development and running, no specific complex environment variable configurations are required beyond standard `Python` and `NLTK` for for sentiment analysis.
+This F1 Racer AI Agent runs on `Python 3.11`. It utilizes either a basic logging setup or a more nuanced logging set up using a dict config located at `logger.json` as seen above, `logger.py` loads the config or defaults to a basic logger. For local development and running, no specific complex environment variable configurations are required beyond standard `Python` and `NLTK` for for sentiment analysis.
 
 ### Prerequisites <a id="prerequisites"></a>
 
@@ -181,7 +181,7 @@ Agent replied: Go Mifune replies: Love the energy! 🚀 Your cheers make a massi
 2025-05-18T14:23:33 INFO __main__:50 Exiting interactive mode.
 ```
 
-It is important the set an initial state via `stage` nad `result` before the agent can engage.
+It is important the set an initial state via `stage` and `result` before the agent can engage.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
