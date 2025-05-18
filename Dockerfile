@@ -3,6 +3,7 @@ FROM python:3.11.9-alpine
 WORKDIR /app
 
 COPY f1_agent.py .
+COPY logger.json .
 
 COPY agent/ ./agent/
 COPY project/ ./project/
@@ -12,8 +13,8 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # In your console, limit your API KEY to just the Gemini API for safety
-ENV GOOGLE_API_KEY="your-api-key-here"
+ENV GOOGLE_API_KEY="your-api-key"
 
-ENTRYPOINT ["python", "f1_agent.py"]
+ENTRYPOINT ["python", "f1_agent.py", "--text-generator", "gemini"]
 
 CMD []
