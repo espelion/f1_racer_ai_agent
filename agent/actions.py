@@ -16,18 +16,18 @@ class ActionSimulator:
             ):
         # TODO: If there was an actual replying API, the logic would go here
         LOGGER.debug(f"Action: Replying to {commenter}'s comment ('{original_comment}')")
-        LOGGER.info(f"Agent Reply: \"{generated_reply_text}\"")
+        LOGGER.debug(f"Agent Reply: \"{generated_reply_text}\"")
 
     def post_status_update(self, generated_post_text: str):
         # TODO: If there was an actual posting API, the logic would go here
         LOGGER.debug(f"Action: Posting new status update:")
-        LOGGER.info(f"Agent Post: \"{generated_post_text}\"")
+        LOGGER.debug(f"Agent Post: \"{generated_post_text}\"")
 
     def like_post(self, post_content: str, author: str = "AnotherRacer"):
         # TODO: If there was an actual liking API, the logic would go here
-        LOGGER.info(f"Action: Liking post from {author}: \"{post_content[:50]}...\"")
+        LOGGER.debug(f"Action: Liking post from {author}: \"{post_content[:50]}...\"")
 
     def mention_entity(self, entity_name: str, generated_text_with_mention: str):
         # TODO: If there was an actual mentioning API, the logic would go here
         LOGGER.debug(f"Action: Mentioning {entity_name} in a post.")
-        LOGGER.info(f"Agent Post with Mention: \"{generated_text_with_mention}\"")
+        LOGGER.debug(f"Agent Post with Mention: \"{generated_text_with_mention}\"")
