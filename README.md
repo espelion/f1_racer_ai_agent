@@ -31,6 +31,7 @@
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#gemini">Using Gemini</a></li>
+        <li><a href="#transformer">Using a Transformer</a></li>
         <li><a href="#docker">Docker</a></li>
       </ul>
     </li>
@@ -49,7 +50,7 @@ This project introduces the F1 Racer AI Agent, a Python-based application design
 
 
 ### Built With <a id="built-with"></a>
-This F1 Racer AI Agent is built with `Python 3.11` and is designed for containerization using `Docker`. The agent's text generation can be extended with NLP libraries such as NLTK or Transformers (e.g., from Hugging Face), and potentially leverage Large Language Models like <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/gemini-generator#gemini">Gemini</a>, though the current primary implementation uses a template-based approach.
+This F1 Racer AI Agent is built with `Python 3.11` and is designed for containerization using `Docker`. The agent's text generation can be extended with NLP libraries such as NLTK or <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/transformer-generator#transformer">Transformers</a> (e.g., from Hugging Face), and potentially leverage Large Language Models like <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/gemini-generator#gemini">Gemini</a>, though the current primary implementation uses a template-based approach.
 * [![Python][Python]][Python-url]
 * [![Docker][Docker]][Docker-url]
 * [![NLTK][NLTK]][NLTK-url]
@@ -122,6 +123,15 @@ _Follow these steps to get your development environment running._
 ### Using Gemini <a id="gemini"></a>
 
 If you would like to use the **Gemini Text Generator** you will need to use the <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/gemini-generator#gemini">gemini</a> branch of the codebase. It has been separated from the basic implementation to keep Docker containers light-weight depending on your needs.
+
+_NB: Docker process remains the same._
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+### Using a Transformer <a id="transformer"></a>
+
+If you would like to use the **Transormer Text Generator** you will need to use the <a href="https://github.com/espelion/f1_racer_ai_agent/tree/feature/transformer-generator#transformer">transformer</a> branch of the codebase. It has been separated from the basic implementation to keep Docker containers light-weight depending on your needs. Some of the packages used run some of these computations are quite large and bloat the environments and containers, hence this version is kept really basic.
 
 _NB: Docker process remains the same._
 
