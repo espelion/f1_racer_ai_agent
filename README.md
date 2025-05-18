@@ -69,7 +69,7 @@ f1_agent_project/
 │   ├── actions.py
 │   ├── racer.py
 │   └── utils.py
-├── agent/
+├── project/
 │   ├── __init__.py
 │   ├── consts.py
 │   └── logger.py
