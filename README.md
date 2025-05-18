@@ -189,7 +189,7 @@ It is important the set an initial state via `stage` and `result` before the age
 ## Contact
 
 Project Link: https://github.com/espelion/f1_racer_ai_agent
-Email: mfundo@espelion.com
+<br />Email: mfundo@espelion.com
 
 For issues or feature requests, please use the GitHub Issues page.
 
